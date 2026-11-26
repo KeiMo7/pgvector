@@ -392,6 +392,17 @@ CREATE FUNCTION hnsw_sparsevec_support(internal) RETURNS internal
 
 COMMENT ON FUNCTION hnsw_sparsevec_support(internal) IS 'hnsw sparsevec support';
 
+-- read-only verification and statistics
+
+CREATE FUNCTION hnsw_index_info(index regclass, OUT version int, OUT dimensions int, OUT m int, OUT ef_construction int, OUT entry_level int, OUT entry_blkno bigint, OUT entry_offno int, OUT insert_page bigint, OUT pages bigint) RETURNS record
+	AS 'MODULE_PATHNAME' LANGUAGE C;
+
+CREATE FUNCTION hnsw_graph_stats(index regclass, OUT level int, OUT elements bigint, OUT deleted bigint, OUT heaptids bigint, OUT fanout_min int, OUT fanout_max int, OUT empty_neighbors bigint) RETURNS SETOF record
+	AS 'MODULE_PATHNAME' LANGUAGE C;
+
+CREATE FUNCTION hnsw_verify(index regclass, mode text DEFAULT 'structure', max_findings int DEFAULT 100, max_visited int DEFAULT 1000000, OUT severity text, OUT code text, OUT level int, OUT blkno bigint, OUT offno int, OUT detail text) RETURNS SETOF record
+	AS 'MODULE_PATHNAME' LANGUAGE C;
+
 -- vector opclasses
 
 CREATE OPERATOR CLASS vector_ops
